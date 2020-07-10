@@ -11,22 +11,12 @@ ENV PYTHONUNBUFFERED 1
 # add and install requirements
 COPY requirements.txt .
 
-RUN \
- apk update && apk add bash &&\ 
- apk add --no-cache python3 postgresql-libs && \
- apk add --no-cache --virtual .build-deps gcc python3-dev musl-dev postgresql-dev && \
- apk add --no-cache librdkafka librdkafka-dev && \
- apk add netcat-openbsd &&\
- python3 -m pip install -r requirements.txt --no-cache-dir && \
- apk --purge del .build-deps
+RUN apk update  && \
+  apk add --no-cache postgresql-libs postgresql-dev ca-certificates gcc musl-dev libressl-dev libc-dev librdkafka librdkafka-dev python-dev netcat-openbsd bash && \
+  python3 -m pip install -r requirements.txt --no-cache-dir 
 
- # add entrypoint.sh
-#COPY ./entrypoint.sh /project/entrypoint.sh
-#RUN chmod +x /project/entrypoint.sh
+COPY chain.pem .
+RUN cat chain.pem >> /usr/local/lib/python3.8/site-packages/certifi/cacert.pem
 
-# add app
 COPY . /project/
 
-#ENTRYPOINT ["/project/entrypoint.sh"]
-# run server
-#CMD python manage.py run -h 0.0.0.0

@@ -2,11 +2,10 @@ version: '3'
 
 services:
 
-  peoplecounter_in_api:
+  endpoint:
     build: 
         context: ./platform_in/
         dockerfile: Dockerfile.prod
-    entrypoint: ['/project/entrypoint.sh']
     command: gunicorn --bind 0.0.0.0:5003 manage:app
     volumes:
       - ./platform_in/:/project/
@@ -19,7 +18,7 @@ services:
       - FLASK_ENV=production
       - APP_SETTINGS=app.config.ProductionConfig
 
-  nginx:
+  nginx: 
     build: ./nginx
     ports:
       - 1337:80

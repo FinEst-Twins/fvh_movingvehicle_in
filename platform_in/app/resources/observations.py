@@ -11,6 +11,8 @@ from confluent_kafka import Producer, avro
 from confluent_kafka.avro import AvroProducer
 
 
+logging.basicConfig(level=logging.DEBUG)
+
 observations_blueprint = Blueprint("observations", __name__)
 api = Api(observations_blueprint)
 success_response_object = {"status": "success"}
@@ -39,7 +41,7 @@ def delivery_report(err, msg):
         logging.debug(f"Message delivered to {msg.topic()} [{msg.partition()}]")
 
 
-def kafka_produce_peoplecounter_data(topic, jsonstring):
+def kafka_produce_data(topic, jsonstring):
 
     kafka_producer = get_kafka_producer()
 
@@ -58,7 +60,7 @@ def kafka_produce_peoplecounter_data(topic, jsonstring):
         return False
 
 
-class SolarInverterObservation(Resource):
+class VehicleTelemetryObservation(Resource):
     def post(self):
         """
         Post new observation
@@ -67,22 +69,19 @@ class SolarInverterObservation(Resource):
         try:
             data = request.get_json()
             data = json.loads(data)
-            #print(request.headers)
             logging.info(f"post observation: {data}")
-            #print("post data for solar inverter", data)
-            #print("inverter name", data["name"])
         
             inverter_name = data["name"]
-            topic_prefix = "test.sputhan.finest.viikkisolar"
+            topic_prefix = "test.sputhan.finest.movingvehicle"
 
             topic = f"{topic_prefix}.{inverter_name}"
             #print(topic)
-            kafka_produce_peoplecounter_data(topic, json.dumps(data))
+            kafka_produce_data(topic, json.dumps(data))
             return success_response_object,success_code
 
         except Exception as e:
-            print("solar inverter error", e)
+            print("incoming data processing error", e)
             return failure_response_object,failure_code
 
 
-api.add_resource(SolarInverterObservation, "/viikkisolar/observation")
+api.add_resource(VehicleTelemetryObservation, "/wrm247/v1")
