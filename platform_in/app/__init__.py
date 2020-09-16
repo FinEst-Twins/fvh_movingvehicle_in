@@ -76,12 +76,14 @@ def create_app(script_info=None):
     def hello_world():
         return jsonify(hello="world")
 
-    @app.route('/wrm247/v1', methods=['POST'])
-    def put_movingvehicle_data():
+    @app.route('/wrm247/v1/', methods=['POST'])
+    def post_movingvehicle_data():
         try:
+            print(request.data)
             data = request.get_json()
-            print(data)
-            logging.debug(data)
+
+            print(request.headers)
+            logging.debug(request.data)
             topic = "finnest.cesva.movingvehicle"
 
             kafka_avro_produce(avroProducer,topic,data)
