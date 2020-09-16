@@ -70,7 +70,7 @@ class VehicleTelemetryObservation(Resource):
             data = request.get_json()
             data = json.loads(data)
             logging.info(f"post observation: {data}")
-        
+
             inverter_name = data["name"]
             topic_prefix = "test.sputhan.finest.movingvehicle"
 
@@ -84,4 +84,4 @@ class VehicleTelemetryObservation(Resource):
             return failure_response_object,failure_code
 
 
-api.add_resource(VehicleTelemetryObservation, "/wrm247/v1")
+api.add_resource(VehicleTelemetryObservation, "/wrm247/v1/")
