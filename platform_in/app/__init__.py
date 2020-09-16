@@ -62,7 +62,7 @@ def create_app(script_info=None):
             "ssl.ca.location": certifi.where(),
             #"debug": "security,cgrp,fetch,topic,broker,protocol",
             "on_delivery": delivery_report,
-            "schema.registry.url": app.config["SCHEMA_REGISTRY_URL"] 
+            "schema.registry.url": app.config["SCHEMA_REGISTRY_URL"]
         },
         default_value_schema=value_schema,
     )
@@ -71,18 +71,19 @@ def create_app(script_info=None):
     @app.shell_context_processor
     def ctx():
         return {"app": app}
-    
+
     @app.route("/")
     def hello_world():
         return jsonify(hello="world")
 
     @app.route('/wrm247/v1', methods=['POST'])
-    def put_sentilonoise_data():
+    def put_movingvehicle_data():
         try:
             data = request.get_json()
+            print(data)
             logging.debug(data)
             topic = "finnest.cesva.movingvehicle"
-            
+
             kafka_avro_produce(avroProducer,topic,data)
 
             return success_response_object,success_code
