@@ -3,12 +3,10 @@ version: '3'
 services:
 
   endpoint:
-    build: 
+    build:
         context: ./platform_in/
         dockerfile: Dockerfile.prod
     command: gunicorn --bind 0.0.0.0:5003 manage:app
-    volumes:
-      - ./platform_in/:/project/
     expose:
       - 5003
     env_file:
@@ -18,7 +16,7 @@ services:
       - FLASK_ENV=production
       - APP_SETTINGS=app.config.ProductionConfig
 
-  nginx: 
+  nginx:
     build: ./nginx
     ports:
       - 1337:80
