@@ -84,9 +84,9 @@ def create_app(script_info=None):
 
             print(request.headers)
             logging.debug(request.data)
-            topic = "finnest.cesva.movingvehicle"
+            # topic = "finnest.cesva.movingvehicle"
 
-            kafka_avro_produce(avroProducer,topic,data)
+            # kafka_avro_produce(avroProducer,topic,data)
 
             return success_response_object,success_code
 
