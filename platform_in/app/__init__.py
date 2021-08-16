@@ -76,7 +76,7 @@ def create_app(script_info=None):
     def hello_world():
         return jsonify(hello="world")
 
-    @app.route('/wrm247/v1/', methods=['POST'])
+    @app.route('/wrm247/v1', methods=['POST'])
     def post_movingvehicle_data():
         try:
             print(request.data)
