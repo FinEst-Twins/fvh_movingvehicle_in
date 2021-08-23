@@ -6,19 +6,20 @@ services:
     build:
         context: ./platform_in/
         dockerfile: Dockerfile.prod
-    command: gunicorn --bind 0.0.0.0:5003 manage:app
+    #command: gunicorn --bind 0.0.0.0:5003 manage:app
     expose:
-      - 5003
+      - 5000
     env_file:
-      - var.env
+      - app_config.env
     environment:
-      - FLASK_APP=app/__init__.py
-      - FLASK_ENV=production
-      - APP_SETTINGS=app.config.ProductionConfig
+      - ca=chain.pem
+      - cert=service.cert
+      - key=service.key
+      - LOG_LEVEL=2
 
   nginx:
     build: ./nginx
     ports:
       - 1337:80
     depends_on:
-      - peoplecounter_in_api
+      - endpoint
