@@ -15,6 +15,7 @@ success_code = 202
 failure_response_object = {"status": "failure"}
 failure_code = 400
 
+elastic_apm = ElasticAPM()
 
 def create_app(script_info=None):
 
@@ -28,6 +29,8 @@ def create_app(script_info=None):
     logging.basicConfig(level=app.config["LOG_LEVEL"])
     logging.getLogger().setLevel(app.config["LOG_LEVEL"])
 
+    # set up extensions
+    elastic_apm.init_app(app)
     producer = KafkaProducer(
         bootstrap_servers=app.config["KAFKA_BROKERS"],
         security_protocol=app.config["SECURITY_PROTOCOL"],
