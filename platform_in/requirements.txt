@@ -12,3 +12,4 @@ pytest
 requests
 certifi
 pydantic
+sentry-sdk[flask]

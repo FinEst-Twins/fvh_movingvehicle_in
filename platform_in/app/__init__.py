@@ -8,6 +8,12 @@ from flask import jsonify, request
 import json
 import certifi
 from kafka import KafkaProducer
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+if os.getenv("SENTRY_DSN"):
+    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), integrations=[FlaskIntegration()])
+
 
 
 success_response_object = {"status": "success"}
@@ -16,6 +22,7 @@ failure_response_object = {"status": "failure"}
 failure_code = 400
 
 elastic_apm = ElasticAPM()
+
 
 def create_app(script_info=None):
 
@@ -50,6 +57,10 @@ def create_app(script_info=None):
     def hello_world():
         return jsonify(health="ok")
 
+    @app.route("/debug-sentry")
+    def trigger_error():
+        division_by_zero = 1 / 0
+
     @app.route("/wrm247/v1", methods=["POST"])
     def post_data():
 
@@ -57,12 +68,35 @@ def create_app(script_info=None):
             # data = request.get_data()
             data = request.get_data()
             logging.info(f"post data goes like : {data[0:200]}")
-            logging.debug(f"post data in json : {json.loads(data)}")
+            json_data = json.loads(data)
+            logging.debug(f"post data in json : {json_data}")
 
+            # ts and v are separate array.
+            # converting it into an array of ts,v pairs here
+
+            ts_arr = json_data["ts"]
+            v_arr = json_data["v"]
+
+            pair_arr = []
+
+            if len(ts_arr) != len(v_arr):
+                raise Exception("error in input, array length ts and v do not match")
+
+
+            iter = 0
+            for item in ts_arr:
+                pair_arr.append({"ts":item ,"v":v_arr[iter]})
+                iter = iter + 1
+
+            print(pair_arr)
+
+            json_data["values"] = pair_arr
+            del json_data["ts"]
+            del json_data["v"]
 
             producer.send(
                 topic="finest.json.movingvehicle",
-                #topic="test.sputhan",
+                # topic="test.sputhan",
                 key="",
                 value=request.get_json(),
             )
