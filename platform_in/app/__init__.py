@@ -88,7 +88,7 @@ def create_app(script_info=None):
                 pair_arr.append({"ts":item ,"v":v_arr[iter]})
                 iter = iter + 1
 
-            print(pair_arr)
+            #print(pair_arr)
 
             json_data["values"] = pair_arr
             del json_data["ts"]
@@ -96,9 +96,8 @@ def create_app(script_info=None):
 
             producer.send(
                 topic="finest.json.movingvehicle",
-                # topic="test.sputhan",
                 key="",
-                value=request.get_json(),
+                value=json_data,
             )
 
             return success_response_object, success_code
