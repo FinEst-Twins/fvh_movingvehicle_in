@@ -12,8 +12,8 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
 if os.getenv("SENTRY_DSN"):
-    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"), integrations=[FlaskIntegration()])
-
+    sentry_sdk.init(dsn=os.getenv("SENTRY_DSN"),
+                    integrations=[FlaskIntegration()])
 
 
 success_response_object = {"status": "success"}
@@ -80,15 +80,15 @@ def create_app(script_info=None):
             pair_arr = []
 
             if len(ts_arr) != len(v_arr):
-                raise Exception("error in input, array length ts and v do not match")
-
+                raise Exception(
+                    "error in input, array length ts and v do not match")
 
             iter = 0
             for item in ts_arr:
-                pair_arr.append({"ts":item ,"v":v_arr[iter]})
+                pair_arr.append({"ts": item, "v": v_arr[iter]})
                 iter = iter + 1
 
-            #print(pair_arr)
+            # print(pair_arr)
 
             json_data["values"] = pair_arr
             del json_data["ts"]
