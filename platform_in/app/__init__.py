@@ -33,8 +33,9 @@ def create_app(script_info=None):
     app_settings = os.getenv("APP_SETTINGS")
     app.config.from_object(app_settings)
 
-    logging.basicConfig(level=app.config["LOG_LEVEL"])
+    logging.basicConfig(format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s", level=app.config["LOG_LEVEL"])
     logging.getLogger().setLevel(app.config["LOG_LEVEL"])
+    logging.info("In create_app()")
 
     # set up extensions
     elastic_apm.init_app(app)
