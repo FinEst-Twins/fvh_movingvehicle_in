@@ -66,38 +66,25 @@ def create_app(script_info=None):
     def post_data():
 
         try:
-            # data = request.get_data()
             data = request.get_data()
             logging.info(f"post data goes like : {data[0:200]}")
             json_data = json.loads(data)
             logging.debug(f"post data in json : {json_data}")
 
-            # ts and v are separate array.
-            # converting it into an array of ts,v pairs here
+            # Combine timeseries and values in payload
+            payloads = json_data["payload"]
+            formatted_payloads = []
+            for payload in payloads:
+                ts_arr, v_arr = payload["ts"], payload["v"] # should be of same length
+                payload["values"] = list(map(lambda x,y: {"ts":x, "v":y}, ts_arr, v_arr))
+                del payload["ts"], payload["v"]
+                formatted_payloads.append(payload)
 
-            ts_arr = json_data["ts"]
-            v_arr = json_data["v"]
-
-            pair_arr = []
-
-            if len(ts_arr) != len(v_arr):
-                raise Exception(
-                    "error in input, array length ts and v do not match")
-
-            iter = 0
-            for item in ts_arr:
-                pair_arr.append({"ts": item, "v": v_arr[iter]})
-                iter = iter + 1
-
-            # print(pair_arr)
-
-            json_data["values"] = pair_arr
-            del json_data["ts"]
-            del json_data["v"]
-
+            json_data["payload"] = formatted_payloads
+            
             producer.send(
                 topic="finest.json.movingvehicle",
-                key="",
+                key="", # might have to add dummy data here to remove null error in connector
                 value=json_data,
             )
 
